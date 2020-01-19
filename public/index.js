@@ -28,7 +28,8 @@ const point = L.icon({
 
 const routingControlOptions = { 
     addWaypoints: true,
-    draggableWaypoints: false,
+    draggableWaypoints: true,
+    routeWhileDragging: true,
     createMarker
 }
 
@@ -43,13 +44,25 @@ function createMarker(i, waypoint, n){
         icon = point;
     
     //create the marker
-    marker = L.marker(waypoint.latLng, {icon}).bindPopup("<b> Parada #" + (i+1).toString() + "<b>");
+    marker = L.marker(waypoint.latLng, {draggable: true, icon}).bindPopup("<h6 class='text-center'><b> Parada #" + (i+1) + '<b><h6><br><button class="btn btn-danger" onClick="removeMarker('+i+')" class="dropdown-item" type="button">Remover</button>');
     
-    //add the marker to the cluster, if any
-    if(cluster)
-        cluster.addLayer(marker);
+
+    //create a new cluster on the first waypoint and add it to the map
+    //delete old if any
+    if(i == 0){
+        if(cluster)
+            map.removeLayer(cluster);
+        cluster = L.markerClusterGroup();
+        map.addLayer(cluster);
+    }
+    cluster.addLayer(marker);
     
     return marker;
+}
+
+//removes a marker at the i'th element in the route's waypoints array
+function removeMarker(i){
+    routing_control.spliceWaypoints(i, 1);
 }
 
 async function fetchRoutes(){
@@ -73,22 +86,20 @@ function setRoute(id){
             //set the route description name
             description_input.value = route.description;
             
-            //create a new cluster, delete old if any
-            if(cluster)
-                map.removeLayer(cluster);
-            cluster = L.markerClusterGroup();
-            
             //put all the waypoints on routing machine
             waypoints = [];
             for(const point of route.points)
                 waypoints.push({latLng:L.latLng(point.latitude, point.longitude)});
             routing_control.setWaypoints(waypoints);
-            
-            //add cluster to map
-            map.addLayer(cluster);
+
             return;
         }
     }
+}
+
+function clearRoute(){
+    description_input.value = "";
+    routing_control.setWaypoints([]);
 }
 
 function main(){
