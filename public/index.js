@@ -96,6 +96,8 @@ function main(){
     const attribution = '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> | Map icons by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a>';
     const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
     
+    description_input.value = "";
+
     map = L.map('map');
     L.tileLayer(tileUrl, { attribution }).addTo(map);
     routing_control = L.Routing.control(routingControlOptions).addTo(map);
@@ -105,5 +107,7 @@ function main(){
             addRoute(route);
         if(routes.length > 0)
             setRoute(routes[0]._id);
+        else
+            map.setView([9.93224, -84.07952], 13);
     });
 }

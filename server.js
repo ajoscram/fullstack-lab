@@ -33,9 +33,11 @@ app.get("/routes", (request, response) => {
 });
 
 app.post("/routes", (request, response) => {
-    createUnsuccessfulResponse("NOT_IMPEMENTED_YET").then((json) =>{
-        response.send(json);
-    });
+    route = request.body.route;
+    routeController.add(route)
+        .then(added => { return createSuccessfulResponse("route", added)})
+        .catch(error => { return createUnsuccessfulResponse(error); })
+        .then(json => { response.send(json) } );
 });
 
 //Connecting to the database and opening the server for requests

@@ -48,7 +48,8 @@ async function query(collection, filter){
 
 async function add(collection, object){
     try{
-        return await database.instance.collection(collection).insertOne(object);
+        result = await database.instance.collection(collection).insertOne(object);
+        return result.ops[0];
     } catch(mongo_error){
         console.log(mongo_error);
         throw error;
